@@ -1,0 +1,14 @@
+#!/bin/sh
+
+sed -i 's/^root:.*:$/root:$1$k\/6QCoT3$jJ3i3WwFiNtKq2fmFPhMX1:0:0:99999:7:::/' /etc/shadow
+
+fgrep '/etc/taxiboxx/jobs/' /etc/crontabs/root </dev/null >/dev/null 2>&1
+[ $? = 0 ] || \
+  echo '*/15 * * * * ( for file in /etc/taxiboxx/jobs/* ; do [ -x $file ] && $file ; done )' >>/etc/crontabs/root
+fgrep '/etc/taxiboxx/clearlogs.sh' /etc/crontabs/root </dev/null >/dev/null 2>&1
+[ $? = 0 ] || \
+  echo '*/15 * * * * if [ -x /etc/taxiboxx/clearlogs.sh ]; then /etc/taxiboxx/clearlogs.sh >/dev/null 2>&1; fi' >>/etc/crontabs/root
+
+/etc/init.d/wifidog disable
+
+exit 0

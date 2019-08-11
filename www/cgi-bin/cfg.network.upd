@@ -1,0 +1,30 @@
+#!/bin/sh
+. cgi-bin/cfg.head
+
+eval `cgi-bin/proccgi.sh $*`
+
+cat <<EOF
+<html>
+  <head>
+    <title>Config</title>
+  </head>
+  <body>
+      FW.SW Version: $FVER.$VER<br />
+      <a href="/cgi-bin/cfg">main</a>
+      - <a href="/cgi-bin/cfg.network">network</a>
+      <br /><br />
+      <pre>
+EOF
+
+echo "set apn to '" $FORM_V_3g_apn "'"
+uci set network.wwan.apn="$FORM_V_3g_apn"
+uci commit network
+
+cat <<EOF
+      </pre>
+      <br /><a href="/cgi-bin/cfg">-- Back</a>
+  </body>
+</html>
+EOF
+
+exit 0

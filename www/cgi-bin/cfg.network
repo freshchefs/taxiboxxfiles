@@ -1,0 +1,25 @@
+#!/bin/sh
+. cgi-bin/cfg.head
+
+V_3g_apn=$(uci -q get network.wwan.apn)
+
+cat <<EOF
+<html>
+  <head>
+    <title>Config</title>
+  </head>
+  <body>
+      FW.SW Version: $FVER.$VER<br />
+      <a href="/cgi-bin/cfg">main</a>
+      - <a href="/cgi-bin/cfg.network">network</a>
+      <br /><br />
+      <form method="get" action="cgi-bin/cfg.network.upd">
+          3g apn:<br />
+          <input type="text" size="32" name="V_3g_apn" value="$V_3g_apn" /><br />
+          <input type="submit" value="Submit" />
+      </form>
+  </body>
+</html>
+EOF
+
+exit 0

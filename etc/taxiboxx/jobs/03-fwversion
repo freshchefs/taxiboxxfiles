@@ -1,0 +1,33 @@
+#!/bin/sh
+PATH=/etc/taxiboxx:$PATH
+export PATH
+
+[ -f /mnt/flashdrive/.not.mounted ] && exit 1
+if [ ! -f /tmp/.fwcheck ]; then
+    touch /tmp/.fwcheck
+    exit 0
+fi
+FWDIR=/mnt/flashdrive/fw
+mkdir -p $FWDIR
+CV=$(cat /etc/.VERSION)
+SV=$(cat /mnt/flashdrive/fw/fw.ver)
+if [ "$CV" = "" ]; then CV=0; fi
+if [ "$SV" = "" ]; then SV=0; fi
+cd $FWDIR
+
+URL="$(uci -q get taxiboxx.webservice.url)/inst/version_fw.php"
+
+. /usr/share/libubox/jshn.sh
+
+RSLT=$(curl -L -k -s "${URL}")
+json_load "$RSLT"
+json_get_var VER status
+
+if [ "$VER" = "" ]; then VER=0; fi
+if [ $VER -gt $CV -a $VER -gt $SV ]; then
+    rm *
+    URL="$(uci -q get taxiboxx.webservice.url)/inst/fw"
+    wget -q --no-check-certificate "$URL/fw.bin" && \
+    wget -q --no-check-certificate "$URL/fw.md5" && \
+    wget -q --no-check-certificate "$URL/fw.ver"
+fi

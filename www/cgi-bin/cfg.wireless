@@ -1,0 +1,34 @@
+#!/bin/sh
+. cgi-bin/cfg.head
+
+V_mesh_dis=$(uci -q get wireless.radio0.disabled)
+V_ap_ssid=$(uci -q get wireless.ap0.ssid)
+V_ap_encrypt=$(uci -q get wireless.ap0.encryption)
+V_ap_key=$(uci -q get wireless.ap0.key)
+
+cat <<EOF
+<html>
+  <head>
+    <title>Config</title>
+  </head>
+  <body>
+      FW.SW Version: $FVER.$VER<br />
+      <a href="/cgi-bin/cfg">main</a>
+      - <a href="/cgi-bin/cfg.wireless">wireless</a>
+      <br /><br />
+      <form method="get" action="cgi-bin/cfg.network.upd">
+          mesh disable:<br />
+          <input type="text" size="32" name="V_mesh_dis" value="$V_mesh_dis" /><br />
+          ap ssid:<br />
+          <input type="text" size="32" name="V_ap_ssid" value="$V_ap_ssid" /><br />
+          ap encryption:<br />
+          <input type="text" size="32" name="V_ap_encrypt" value="$V_ap_encrypt" /><br />
+          ap key:<br />
+          <input type="text" size="32" name="V_ap_key" value="$V_ap_key" /><br />
+          <input type="submit" value="Submit" />
+      </form>
+  </body>
+</html>
+EOF
+
+exit 0

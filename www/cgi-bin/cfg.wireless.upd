@@ -1,0 +1,36 @@
+#!/bin/sh
+. cgi-bin/cfg.head
+
+eval `cgi-bin/proccgi.sh $*`
+
+cat <<EOF
+<html>
+  <head>
+    <title>Config</title>
+  </head>
+  <body>
+      FW.SW Version: $FVER.$VER<br />
+      <a href="/cgi-bin/cfg">main</a>
+      - <a href="/cgi-bin/cfg.wireless">wireless</a>
+      <br /><br />
+      <pre>
+EOF
+
+echo "disable mesh '" $FORM_V_mesh_dis "'"
+uci set wireless.radio0.disabled="$FORM_V_mesh_dis"
+echo "set ap ssid '" $FORM_V_ap_ssid "'"
+uci set wireless.ap0.ssid="$FORM_V_ap_ssid"
+echo "set ap encryption '" $FORM_V_ap_encrypt "'"
+uci set wireless.ap0.encryption="$FORM_V_ap_encrypt"
+echo "set ap key '" $FORM_V_ap_key "'"
+uci set wireless.ap0.key="$FORM_V_ap_key"
+uci commit wireless
+
+cat <<EOF
+      </pre>
+      <br /><a href="/cgi-bin/cfg">-- Back</a>
+  </body>
+</html>
+EOF
+
+exit 0

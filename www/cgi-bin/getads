@@ -1,0 +1,36 @@
+#!/bin/sh
+PATH=/etc/taxiboxx:/usr/bin:/usr/sbin:/bin:/sbin
+export PATH
+
+echo "Cache-Control: no-cache, no-store, must-revalidate"
+echo "Pragma: no-cache"
+echo "Expires: 0"
+echo "Content-type: text/html"
+echo ""
+
+MAC=$(cat /proc/net/arp | grep "^$REMOTE_ADDR "  | awk '{ print $4 }')
+DMAC=$(cat /tmp/.driver)
+GW_ID=$(getmac.sh)
+URL="$(uci -q get taxiboxx.webservice.adsurl)?mac=$MAC&gw_id=$GW_ID&dmac=$DMAC"
+export MAC DMAC GW_ID URL
+
+cat <<EOF
+<html>
+  <head>
+    <meta http-equiv="expires" content="0" />
+    <META HTTP-EQUIV="Pragma-directive" CONTENT="no-cache" />
+    <META HTTP-EQUIV="Cache-directive" CONTENT="no-cache" />
+    <META HTTP-EQUIV="Cache-control" CONTENT="no-cache" />
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
+    <meta http-equiv="refresh" content="1;URL='$URL'" />
+    <title>GetAd</title>
+    <script type="text/javascript">
+      location.href = "$URL";
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
+EOF
+
+exit 0

@@ -1,0 +1,16 @@
+#!/bin/sh
+PATH=/usr/bin:/usr/sbin:/bin:/sbin
+export PATH
+
+echo "Cache-Control: no-cache, no-store, must-revalidate"
+echo "Pragma: no-cache"
+echo "Expires: 0"
+echo "Content-type: text/html"
+echo ""
+
+FVFILE=/etc/.VERSION
+FVER=$([ -f $FVFILE ] && cat $FVFILE)
+[ "$FVER" = "" ]&& FVER=0
+VFILE=/etc/taxiboxx/.VERSION
+VER=$([ -f $VFILE ] && cat $VFILE)
+[ "$VER" = "" ]&& VER=0

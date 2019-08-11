@@ -1,0 +1,5 @@
+# custom firewall rules
+
+iptables -N WFC_3g 2>/dev/null
+
+exit 0

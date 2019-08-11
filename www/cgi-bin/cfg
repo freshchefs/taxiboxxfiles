@@ -1,0 +1,18 @@
+#!/bin/sh
+. cgi-bin/cfg.head
+
+cat <<EOF
+<html>
+  <head>
+    <title>Config</title>
+  </head>
+  <body>
+      FW.SW Version: $FVER.$VER<br />
+      <a href="/cgi-bin/cfg">main</a><br /><br />
+      <a href="/cgi-bin/cfg.network">network</a><br /><br />
+      <a href="/cgi-bin/cfg.wireless">wireless</a><br /><br />
+  </body>
+</html>
+EOF
+
+exit 0

@@ -1,0 +1,35 @@
+
+config interface 'bat0'
+	option enabled '1'
+	list track_ip '10.1.0.1'
+	list track_ip '112.90.146.4'
+	list track_ip '112.90.146.2'
+	list track_ip '119.29.158.244'
+	option reliability '2'
+	option count '1'
+	option timeout '5'
+	option interval '4'
+	option down '1'
+	option up '6'
+
+config interface 'wwan'
+	option enabled '1'
+
+config member 'bat0_1_1'
+	option interface 'bat0'
+	option metric '10'
+	option weight '10'
+
+config member 'wan2_2_1'
+	option interface 'wwan'
+	option metric '20'
+	option weight '10'
+
+config policy 'bat0_wan2'
+	list use_member 'bat0_1_1'
+	list use_member 'wan2_2_1'
+
+config rule 'default_rule'
+	option dest_ip '0.0.0.0/0'
+	option use_policy 'bat0_wan2'
+

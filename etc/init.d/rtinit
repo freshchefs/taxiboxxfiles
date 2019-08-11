@@ -1,0 +1,8 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+boot() {
+    [ -f /etc/taxiboxx/init.sh ] && {
+        sh /etc/taxiboxx/init.sh
+    }
+}

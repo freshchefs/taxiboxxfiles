@@ -1,0 +1,9 @@
+#!/bin/sh
+PATH=/usr/bin:/bin
+export PATH
+
+X=$(printf "%d\n" "0x$(head -10 /dev/urandom | md5sum | cut -c 2-3)")
+S=$(($X * 2))
+#echo $S
+sleep $S
+exit 0

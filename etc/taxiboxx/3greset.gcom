@@ -1,0 +1,25 @@
+opengt
+set com 115200n81
+set senddelay 0.05
+waitquiet 1 0.2
+
+send "AT+COPS=0"
+send "^m"
+waitfor 5 "OK" "ERROR"
+if % = -1 goto err
+if % = 0 goto next
+if % = 1 goto err
+
+:next
+send "AT\^SYSCFG=2,2,3FFFFFFF,0,2"
+send "^m"
+waitfor 5 "OK" "ERROR"
+if % = -1 goto err
+if % = 0 goto ready
+if % = 1 goto err
+
+:ready
+exit 0
+
+:err
+exit 1

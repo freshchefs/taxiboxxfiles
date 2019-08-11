@@ -1,0 +1,88 @@
+#!/bin/sh
+
+MESHEXIST=$(uci -q get wireless.mesh0)
+if [ "$MESHEXIST" != "" ]; then
+    exit 0
+fi
+MAC=$(ip link show dev eth0 | awk '/link\/ether/ { print $2 }' | tr -d ':')
+echo $MAC >/etc/openvpn/id
+echo $MAC >>/etc/openvpn/id
+chmod 600 /etc/openvpn/id
+radiomesh=
+ifacemesh=
+radioap=
+ifaceap=
+RADIO0=$(uci -q get wireless.radio0.hwmode)
+if [ "$RADIO0" != "" ]; then
+    if [ "$RADIO0" = "11a" ]; then
+        radiomesh='radio0'
+        ifacemesh='@wifi-iface[0]'
+    else
+        radioap='radio0'
+        ifaceap='@wifi-iface[0]'
+    fi
+fi
+RADIO1=$(uci -q get wireless.radio1.hwmode)
+if [ "$RADIO1" != "" ]; then
+    if [ "$RADIO1" = "11a" ]; then
+        radiomesh='radio1'
+        ifacemesh='@wifi-iface[1]'
+    else
+        radioap='radio1'
+        ifaceap='@wifi-iface[1]'
+    fi
+fi
+if [ "$radiomesh" != "" ]; then
+    uci set wireless.${radiomesh}.country=US
+    uci set wireless.${radiomesh}.channel=149
+    uci set wireless.${radiomesh}.txpower=30
+    uci set wireless.${radiomesh}.disabled=0
+    uci rename wireless.${ifacemesh}=mesh0
+    uci set wireless.mesh0.network=mesh
+    uci set wireless.mesh0.ifname=mesh0
+    uci set wireless.mesh0.mode=adhoc
+    uci set wireless.mesh0.ssid=TBMesh
+    uci set wireless.mesh0.mcast_rate=18000
+    uci set wireless.mesh0.bssid=02:AF:FE:00:11:22
+    uci set wireless.mesh0.encryption=none
+    uci set wireless.mesh0.hidden=1
+    uci add network interface
+    uci rename network.@interface[-1]=mesh
+    uci set network.mesh.mtu=1560
+    uci set network.mesh.proto=batadv
+    uci set network.mesh.mesh=bat0
+    uci add network interface
+    uci rename network.@interface[-1]=bat0
+    uci set network.bat0.ifname=bat0
+    uci set network.bat0.proto=dhcp
+    uci set network.bat0.mtu=1500
+    uci set network.bat0.metric=10
+    uci set network.bat0.peerdns=0
+    uci add_list network.bat0.dns=112.90.146.4
+    uci add_list network.bat0.dns=114.114.115.115
+    uci set network.bat0.auto=1
+    uci set batman-adv.bat0.gw_mode=client
+    uci set alfred.alfred.interface=bat0
+    uci set alfred.alfred.mode=slave
+    uci set alfred.alfred.disabled=0
+fi
+
+if [ "$radioap" != "" ]; then
+    uci set wireless.${radioap}.country=US
+    uci set wireless.${radioap}.channel=11
+    uci set wireless.${radioap}.txpower=30
+    uci set wireless.${radioap}.disabled=0
+    uci rename wireless.${ifaceap}=ap0
+    uci set wireless.ap0.ssid=wc$MAC
+    uci set wireless.ap0.encryption=psk-mixed+tkip+ccmp
+    uci set wireless.ap0.key=$MAC
+fi
+
+uci set network.lan.ipaddr=192.168.168.1
+uci set network.wwan.metric=20
+uci set network.wwan.peerdns=0
+uci set network.wwan.apn=zhkgkj.wxsc.gdapn
+uci add_list network.wwan.dns=112.90.146.4
+uci add_list network.wwan.dns=114.114.115.115
+uci commit
+exit 0
